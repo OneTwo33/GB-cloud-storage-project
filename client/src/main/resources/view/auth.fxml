@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="ru.onetwo33.controller.AuthController">
+    <HBox>
+        <fx:include source="menu.fxml" HBox.hgrow="ALWAYS" />
+    </HBox>
+
+    <TextField fx:id="loginField" promptText="Логин" focusTraversable="false" />
+    <TextField fx:id="passwordField" promptText="Пароль" focusTraversable="false" />
+
+    <Button text="Войти" onAction="#successAuth" />
+</VBox>

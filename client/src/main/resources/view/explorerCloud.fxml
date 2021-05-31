@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableView?>
+<VBox fx:controller="ru.onetwo33.controller.ExplorerCloudController" xmlns:fx="http://javafx.com/fxml" alignment="center">
+    <HBox>
+<!--        <ComboBox fx:id="disksBox" onAction="#selectDiskAction" />-->
+        <TextField fx:id="pathField" HBox.hgrow="ALWAYS" editable="false" />
+<!--        <Button text="Вверх" onAction="#btnPathUpAction"/>-->
+    </HBox>
+    <HBox VBox.vgrow="ALWAYS">
+        <TableView fx:id="cloudFilesTable" HBox.hgrow="ALWAYS" />
+    </HBox>
+
+        <properties>
+            <ctrl><fx:reference source="controller" /></ctrl>
+        </properties>
+</VBox>

@@ -1,0 +1,9 @@
+client/.DS_Store
+client/.idea
+client/*.iml
+client/target
+
+server/.DS_Store
+server/.idea
+server/*.iml
+server/target

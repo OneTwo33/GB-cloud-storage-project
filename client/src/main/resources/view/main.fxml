@@ -1,0 +1,18 @@
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+
+<VBox fx:controller="ru.onetwo33.controller.Controller" xmlns:fx="http://javafx.com/fxml" alignment="center">
+    <HBox>
+        <fx:include source="menu.fxml" HBox.hgrow="ALWAYS" />
+    </HBox>
+
+    <HBox VBox.vgrow="ALWAYS">
+        <fx:include fx:id="leftPanel" source="explorer.fxml" HBox.hgrow="ALWAYS" />
+        <fx:include fx:id="rightPanel" source="explorerCloud.fxml" HBox.hgrow="ALWAYS" />
+    </HBox>
+
+    <HBox fx:id="content">
+        <fx:include source="explorerButtons.fxml" HBox.hgrow="ALWAYS" />
+    </HBox>
+</VBox>

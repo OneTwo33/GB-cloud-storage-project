@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+
+<MenuBar fx:controller="ru.onetwo33.controller.Controller" xmlns:fx="http://javafx.com/fxml">
+    <Menu text="Файл">
+        <MenuItem text="Выход" onAction="#btnExitAction" />
+    </Menu>
+</MenuBar>

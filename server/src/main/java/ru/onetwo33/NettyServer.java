@@ -7,13 +7,19 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.serialization.ClassResolvers;
+import io.netty.handler.codec.serialization.ObjectDecoder;
+import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import ru.onetwo33.handlers.MessageHandler;
+import ru.onetwo33.handlers.OutHandler;
 
 public class NettyServer {
     public static final int PORT = 4000;
 
     public NettyServer() {
+
         EventLoopGroup auth = new NioEventLoopGroup(1);
         EventLoopGroup worker = new NioEventLoopGroup();
 
@@ -26,7 +32,10 @@ public class NettyServer {
                         protected void initChannel(Channel ch) throws Exception {
                             ch.pipeline().addLast(
                                     new StringEncoder(),
-                                    new StringDecoder()
+                                    new StringDecoder(),
+                                    new ObjectEncoder(),
+                                    new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
+                                    new MessageHandler()
                             );
                         }
                     });

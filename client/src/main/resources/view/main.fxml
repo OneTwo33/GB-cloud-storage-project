@@ -12,7 +12,10 @@
         <fx:include fx:id="rightPanel" source="explorerCloud.fxml" HBox.hgrow="ALWAYS" />
     </HBox>
 
-    <HBox fx:id="content">
-        <fx:include source="explorerButtons.fxml" HBox.hgrow="ALWAYS" />
+    <HBox spacing="5">
+        <Button text="Создать папку" focusTraversable="false" maxWidth="Infinity" HBox.hgrow="ALWAYS" />
+        <Button text="Копировать" focusTraversable="false" maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#copyBtnAction"/>
+        <Button text="Удалить" focusTraversable="false" maxWidth="Infinity" HBox.hgrow="ALWAYS" />
+        <Button text="Выход" focusTraversable="false" maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#btnExitAction" />
     </HBox>
 </VBox>

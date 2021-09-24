@@ -1,33 +1,27 @@
 package ru.onetwo33.controller;
 
+import io.netty.channel.socket.SocketChannel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import ru.onetwo33.model.NetworkConnection;
+import ru.onetwo33.network.NetworkConnection;
 
 import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
 
-public class AuthController implements Initializable {
-    private NetworkConnection connection;
+public class AuthController {
+
+    private SocketChannel channel = NetworkConnection.getChannel();
 
     @FXML
     private TextField loginField;
 
     @FXML
     private TextField passwordField;
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        connection = new NetworkConnection();
-    }
 
     public void successAuth(String authWindow) {
         FXMLLoader loader = new FXMLLoader();

@@ -1,5 +1,6 @@
 package ru.onetwo33.controller;
 
+import io.netty.channel.socket.SocketChannel;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
@@ -8,8 +9,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
 import ru.onetwo33.model.FileInfo;
+import ru.onetwo33.network.NetworkConnection;
 
 import java.io.IOException;
 import java.net.URL;
@@ -22,6 +23,9 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public class ExplorerController implements Initializable {
+
+//    private SocketChannel channel = NetworkConnection.getChannel();
+
     @FXML
     TableView<FileInfo> filesTable;
 
@@ -30,9 +34,6 @@ public class ExplorerController implements Initializable {
 
     @FXML
     TextField pathField;
-
-    @FXML
-    VBox leftPanel, rightPanel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -93,21 +94,6 @@ public class ExplorerController implements Initializable {
         });
 
         updateList(Paths.get("."));
-
-//        root.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-//            focusState(newValue);
-//        });
-//
-//        private void focusState(boolean value) {
-//            if (value) {
-//                System.out.println("Focus Gained");
-//            }
-//            else {
-//                System.out.println("Focus Lost");
-//            }
-//        }
-
-
     }
 
     private void updateList(Path path) {
@@ -122,6 +108,7 @@ public class ExplorerController implements Initializable {
         }
     }
 
+    @FXML
     public void btnPathUpAction(ActionEvent actionEvent) {
         Path upperPath = Paths.get(pathField.getText()).getParent();
         if (upperPath != null) {
@@ -129,6 +116,7 @@ public class ExplorerController implements Initializable {
         }
     }
 
+    @FXML
     public void selectDiskAction(ActionEvent actionEvent) {
         ComboBox<String> element = (ComboBox<String>) actionEvent.getSource();
         updateList(Paths.get(element.getSelectionModel().getSelectedItem()));
@@ -144,8 +132,4 @@ public class ExplorerController implements Initializable {
     public String getCurrentPath() {
         return pathField.getText();
     }
-
-//    public void changeASD(MouseEvent event) {
-//        leftPanel.focusedProperty().addListener((obs, oldVal, newVal) -> System.out.println(newVal ? "Focused" : "Unfocused"));
-//    }
 }

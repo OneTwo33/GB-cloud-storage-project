@@ -12,7 +12,7 @@
         <Button text="Вверх" onAction="#btnPathUpAction"/>
     </HBox>
     <HBox VBox.vgrow="ALWAYS">
-        <TableView fx:id="filesTable" HBox.hgrow="ALWAYS" />
+        <TableView fx:id="filesTable" HBox.hgrow="ALWAYS"  />
     </HBox>
 
     <properties>

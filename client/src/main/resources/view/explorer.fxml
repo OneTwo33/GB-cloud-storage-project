@@ -15,7 +15,7 @@
         <TableView fx:id="filesTable" HBox.hgrow="ALWAYS"  />
     </HBox>
 
-    <properties>
-        <ctrl><fx:reference source="controller"/></ctrl>
-    </properties>
+<!--    <properties>-->
+<!--        <ctrl><fx:reference source="controller"/></ctrl>-->
+<!--    </properties>-->
 </VBox>

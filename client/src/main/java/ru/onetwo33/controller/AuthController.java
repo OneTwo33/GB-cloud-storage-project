@@ -15,7 +15,7 @@ import java.io.IOException;
 
 public class AuthController {
 
-    private SocketChannel channel = NetworkConnection.getChannel();
+    private final SocketChannel channel = NetworkConnection.getChannel();
 
     @FXML
     private TextField loginField;

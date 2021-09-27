@@ -10,10 +10,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
-import ru.onetwo33.network.handlers.ByteBufInputHandler;
-import ru.onetwo33.network.handlers.ClientInputHandler;
 import ru.onetwo33.network.handlers.ClientStringHandler;
 
 public final class NetworkConnection {
@@ -31,26 +27,27 @@ public final class NetworkConnection {
                 EventLoopGroup workerGroup = new NioEventLoopGroup();
                 try {
                     Bootstrap b = new Bootstrap();
-                    b.group(workerGroup)
-                            .channel(NioSocketChannel.class)
-                            .handler(new ChannelInitializer<SocketChannel>() {
-                                @Override
-                                protected void initChannel(SocketChannel socketChannel) throws Exception {
-                                    channel = socketChannel;
-                                    socketChannel.pipeline().addLast(
-                                            new ObjectEncoder(),
-                                            new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
+                    b
+                        .group(workerGroup)
+                        .channel(NioSocketChannel.class)
+                        .handler(new ChannelInitializer<SocketChannel>() {
+                            @Override
+                            protected void initChannel(SocketChannel socketChannel) throws Exception {
+                                channel = socketChannel;
+                                socketChannel.pipeline().addLast(
+                                        new ObjectEncoder(),
+                                        new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
 //                                            new ClientInputHandler(),
-                                            new ClientStringHandler()
+                                        new ClientStringHandler()
 //                                            new ByteBufInputHandler(),
 //                                            new OutputHandler()
 //                                            new StringDecoder(),
 //                                            new StringEncoder(),
 //                                            new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
 //                                            new ObjectEncoder()
-                                    );
-                                }
-                            });
+                                );
+                            }
+                        });
                     ChannelFuture future = b.connect(HOST, PORT).sync();
                     future.channel().closeFuture().sync();
                 } catch (Exception e) {
@@ -62,9 +59,5 @@ public final class NetworkConnection {
         }
 
         return channel;
-    }
-
-    public void sendMessage(String str) {
-        channel.writeAndFlush(str);
     }
 }

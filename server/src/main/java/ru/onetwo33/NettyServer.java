@@ -10,10 +10,12 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
+import io.netty.handler.codec.string.LineEncoder;
 import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
+import ru.onetwo33.handlers.CmdHandler;
+import ru.onetwo33.handlers.FileUploadServerHandler;
 import ru.onetwo33.handlers.MessageHandler;
-import ru.onetwo33.handlers.OutHandler;
+import ru.onetwo33.codecs.CmdDecoder;
 
 public class NettyServer {
     public static final int PORT = 4000;
@@ -27,15 +29,21 @@ public class NettyServer {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(auth, worker)
                     .channel(NioServerSocketChannel.class)
-                    .childHandler(new ChannelInitializer<>() {
+                    .childHandler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
                             ch.pipeline().addLast(
-                                    new StringEncoder(),
-                                    new StringDecoder(),
-                                    new ObjectEncoder(),
-                                    new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
-                                    new MessageHandler()
+                                    new CmdDecoder(64 * 1024),
+                                    new CmdHandler()
+//                                    new StringEncoder(),
+//                                    new StringDecoder(), !
+//                                    new ObjectEncoder(),
+//                                    new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
+//                                    new MessageHandler()
+//                                    new ObjectEncoder(),
+//                                    new ObjectDecoder(Integer.MAX_VALUE, ClassResolvers.weakCachingConcurrentResolver(null)),
+//                                    new FileUploadServerHandler()
+//                                    new LineEncoder()
                             );
                         }
                     });

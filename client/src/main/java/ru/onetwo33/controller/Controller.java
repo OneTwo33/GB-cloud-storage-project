@@ -1,25 +1,20 @@
 package ru.onetwo33.controller;
 
-import io.netty.channel.socket.SocketChannel;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import ru.onetwo33.network.NetworkConnection;
 
 public class Controller {
 
-    private final SocketChannel channel = NetworkConnection.getChannel();
-
     @FXML
-    private ExplorerController explorerController;
+    public ExplorerController explorerController;
     @FXML
-    private ExplorerCloudController explorerCloudController;
+    public ExplorerCloudController explorerCloudController;
 
     @FXML
     public void btnExitAction(ActionEvent actionEvent) {
-        channel.close();
         Platform.exit();
         System.exit(0);
     }
@@ -27,9 +22,9 @@ public class Controller {
     @FXML
     public void copyBtnAction(ActionEvent actionEvent) {
         if (explorerController.filesTable.isFocused()) {
-            explorerController.copy();
+            explorerController.upload();
         } else if (explorerCloudController.cloudFilesTable.isFocused()) {
-            explorerCloudController.copy();
+            explorerCloudController.download();
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Не выбран файл", ButtonType.OK);
             alert.showAndWait();

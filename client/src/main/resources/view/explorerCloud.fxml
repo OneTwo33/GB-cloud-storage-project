@@ -10,9 +10,9 @@
 <VBox fx:controller="ru.onetwo33.controller.ExplorerCloudController" xmlns:fx="http://javafx.com/fxml" alignment="center">
     <HBox>
 <!--        <ComboBox fx:id="disksBox" onAction="#selectDiskAction" />-->
-        <Button text="MyCloud" onAction="#testSubmit"/>
+        <Button text="Root" onAction="#getRoot"/>
         <TextField fx:id="pathField" HBox.hgrow="ALWAYS" editable="false" />
-        <Button text="Вверх" />
+        <Button text="Вверх" onAction="#btnPathUpAction"/>
     </HBox>
     <HBox VBox.vgrow="ALWAYS">
         <TableView fx:id="cloudFilesTable" HBox.hgrow="ALWAYS" />

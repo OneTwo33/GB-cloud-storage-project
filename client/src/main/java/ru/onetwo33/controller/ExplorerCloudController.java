@@ -1,62 +1,108 @@
 package ru.onetwo33.controller;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.socket.SocketChannel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import ru.onetwo33.model.FileInfo;
-import ru.onetwo33.network.NetworkConnection;
 import ru.onetwo33.util.UtilsExplorer;
 
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ResourceBundle;
+import java.util.*;
 
-public class ExplorerCloudController implements Initializable {
-
-    private final SocketChannel channel = NetworkConnection.getChannel();
+public class ExplorerCloudController extends AuthController implements Initializable {
 
     @FXML
-    TableView<FileInfo> cloudFilesTable;
+    public TableView<FileInfo> cloudFilesTable;
     @FXML
-    TextField pathField;
+    public TextField pathField;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         UtilsExplorer.buildExplorer(cloudFilesTable);
-        UtilsExplorer.updateList(Paths.get("."), pathField, cloudFilesTable);
+
+        ByteBuf buffer = channel.alloc().directBuffer();
+        byte[] bytes = "ls .\r\n".getBytes(StandardCharsets.UTF_8);
+        buffer.writeBytes(bytes);
+        channel.writeAndFlush(buffer);
+
+        cloudFilesTable.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                Path path = Paths.get(pathField.getText())
+                        .resolve(cloudFilesTable
+                                .getSelectionModel()
+                                .getSelectedItem()
+                                .getFilename());
+//                if (Files.isDirectory(path)) {
+                    String dir = ("ls " + path + "\r\n");
+                    ByteBuf buf = channel.alloc().directBuffer();
+                    buf.writeBytes(dir.getBytes(StandardCharsets.UTF_8));
+                    channel.writeAndFlush(buf);
+//                }
+            }
+        });
     }
 
-    public String getSelectedFilename() {
-        if (!cloudFilesTable.isFocused()) {
-            return null;
-        }
-        return cloudFilesTable.getSelectionModel().getSelectedItem().getFilename();
-    }
-
-    public String getCurrentPath() {
-        return pathField.getText();
-    }
+//    public String getSelectedFilename() {
+//        if (!cloudFilesTable.isFocused()) {
+//            return null;
+//        }
+//        return cloudFilesTable.getSelectionModel().getSelectedItem().getFilename();
+//    }
+//
+//    public String getCurrentPath() {
+//        return pathField.getText();
+//    }
 
     @FXML
-    public void testSubmit(ActionEvent actionEvent) {
-        System.out.println("Отправляем данные");
+    public void getRoot(ActionEvent actionEvent) {
         ByteBuf buffer = channel.alloc().directBuffer();
-        buffer.writeBytes("ls".getBytes(StandardCharsets.UTF_8));
+        buffer.writeBytes("ls \\\r\n".getBytes(StandardCharsets.UTF_8));
         channel.writeAndFlush(buffer);
     }
 
-    public void copy() {
-        Alert alert = new Alert(Alert.AlertType.ERROR, "Фокус на правой", ButtonType.OK);
-        alert.showAndWait();
+    public void download() {
+        Path path = Paths.get(pathField.getText())
+                .resolve(cloudFilesTable
+                        .getSelectionModel()
+                        .getSelectedItem()
+                        .getFilename());
+        String file = "download " + path + "\r\n";
+        ByteBuf buffer = channel.alloc().directBuffer();
+        buffer.writeBytes(file.getBytes(StandardCharsets.UTF_8));
+        channel.writeAndFlush(buffer);
     }
 
     public void delete() {
     }
+
+    public void updateList(Path path, List<FileInfo> fileInfoList) {
+        try {
+            pathField.setText(path.normalize().toString());
+            cloudFilesTable.getItems().clear();
+            cloudFilesTable.getItems().addAll(fileInfoList);
+            cloudFilesTable.sort();
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "По какой-то причине не удалось обновить список файлов");
+            alert.showAndWait();
+        }
+    }
+
+    public void btnPathUpAction(ActionEvent actionEvent) {
+        Path upperPath = Paths.get(pathField.getText()).getParent();
+        ByteBuf buffer = channel.alloc().directBuffer();
+        byte[] bytes = ("ls " + upperPath.toString() + "\r\n").getBytes(StandardCharsets.UTF_8);
+        buffer.writeBytes(bytes);
+        channel.writeAndFlush(buffer);
+    }
+
+
 }

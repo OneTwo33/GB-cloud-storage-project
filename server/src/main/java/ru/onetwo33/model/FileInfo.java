@@ -1,8 +1,15 @@
 package ru.onetwo33.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -25,6 +32,9 @@ public class FileInfo implements Serializable {
     private String filename;
     private FileType type;
     private long size;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime lastModified;
 
     public String getFilename() {
@@ -63,7 +73,7 @@ public class FileInfo implements Serializable {
         try {
             this.filename = path.getFileName().toString();
             this.size = Files.size(path);
-            this.type = Files.isDirectory(path) ? FileType.DIRECTORY : FileType.FILE;
+            this.type = Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS) ? FileType.DIRECTORY : FileType.FILE;
             if (this.type == FileType.DIRECTORY) {
                 this.size = -1L;
             }

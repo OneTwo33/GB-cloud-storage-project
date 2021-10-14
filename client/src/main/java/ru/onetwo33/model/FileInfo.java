@@ -1,5 +1,11 @@
 package ru.onetwo33.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
@@ -25,6 +31,10 @@ public class FileInfo implements Serializable {
     private String filename;
     private FileType type;
     private long size;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+//    @JsonFormat(pattern = "yyyy-MM-dd'T'hh:mm:ss.SSS'Z'")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime lastModified;
 
     public String getFilename() {
@@ -56,6 +66,16 @@ public class FileInfo implements Serializable {
     }
 
     public void setLastModified(LocalDateTime lastModified) {
+        this.lastModified = lastModified;
+    }
+
+    public FileInfo() {
+    }
+
+    public FileInfo(String filename, FileType type, long size, LocalDateTime lastModified) {
+        this.filename = filename;
+        this.type = type;
+        this.size = size;
         this.lastModified = lastModified;
     }
 

@@ -51,16 +51,4 @@ public class UtilsExplorer {
         tableView.getColumns().addAll(fileTypeColumn, filenameColumn, fileSizeColumn, fileDateColumn);
         tableView.getSortOrder().add(fileTypeColumn);
     }
-
-    public static void updateList(Path path, TextField textField, TableView tableView) {
-        try {
-            textField.setText(path.normalize().toAbsolutePath().toString());
-            tableView.getItems().clear();
-            tableView.getItems().addAll(Files.list(path).map(FileInfo::new).collect(Collectors.toList()));
-            tableView.sort();
-        } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.WARNING, "По какой-то причине не удалось обновить список файлов");
-            alert.showAndWait();
-        }
-    }
 }

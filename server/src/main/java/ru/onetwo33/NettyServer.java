@@ -29,6 +29,7 @@ public class NettyServer {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(auth, worker)
                     .channel(NioServerSocketChannel.class)
+                    .localAddress(PORT)
                     .childHandler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
@@ -36,7 +37,7 @@ public class NettyServer {
                                     new CmdDecoder(64 * 1024),
                                     new CmdHandler()
 //                                    new StringEncoder(),
-//                                    new StringDecoder(), !
+//                                    new StringDecoder(),
 //                                    new ObjectEncoder(),
 //                                    new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
 //                                    new MessageHandler()
@@ -47,7 +48,7 @@ public class NettyServer {
                             );
                         }
                     });
-            ChannelFuture future = bootstrap.bind(PORT).sync();
+            ChannelFuture future = bootstrap.bind().sync();
             System.out.println("Server started");
             future.channel().closeFuture().sync();
             System.out.println("Server closed");

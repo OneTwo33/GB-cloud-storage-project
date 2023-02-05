@@ -3,7 +3,6 @@ package ru.onetwo33.controller;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -28,8 +27,8 @@ public class AuthController implements Initializable {
 
     protected static SocketChannel channel;
     private Controller controller;
-    private static final String HOST = "194.67.111.234";
-//    private static final String HOST = "localhost";
+//    private static final String HOST = "3.87.207.72";
+    private static final String HOST = "localhost";
     private static final int PORT = 4000;
 
     @FXML
@@ -41,46 +40,27 @@ public class AuthController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 //        if (channel == null) {
-            new Thread(() -> {
-                EventLoopGroup workerGroup = new NioEventLoopGroup();
-                try {
-                    Bootstrap b = new Bootstrap();
-                    b
-                            .group(workerGroup)
-                            .channel(NioSocketChannel.class)
-                            .handler(new ChannelInitializer<SocketChannel>() {
-                                @Override
-                                protected void initChannel(SocketChannel socketChannel) throws Exception {
-                                    channel = socketChannel;
-                                    ChannelPipeline pipeline = channel.pipeline();
-//                                    pipeline.addLast(new LineEncoder());
-//                                    pipeline.addLast(new ChunkedWriteHandler());
-//                                    socketChannel.pipeline().addLast(
-//                                            new LineEncoder(),
-//                                            new LineBasedFrameDecoder(64 * 1024),
-//                                            new ChunkedWriteHandler()
-////                                            new JsonObjectDecoder()
-////                                            new ObjectEncoder(),
-////                                            new ObjectDecoder(ClassResolvers.cacheDisabled(null))
-////                                            new ClientInputHandler(controller.explorerCloudController)
-////                                        new ClientStringHandler()
-////                                            new ByteBufInputHandler(),
-////                                            new OutputHandler()
-////                                            new StringDecoder(),
-////                                            new StringEncoder(),
-////                                            new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
-////                                            new ObjectEncoder()
-//                                    );
-                                }
-                            });
-                    ChannelFuture future = b.connect(HOST, PORT).sync();
-                    future.channel().closeFuture().sync();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    workerGroup.shutdownGracefully();
-                }
-            }).start();
+        new Thread(() -> {
+            EventLoopGroup workerGroup = new NioEventLoopGroup();
+            try {
+                Bootstrap b = new Bootstrap();
+                b
+                        .group(workerGroup)
+                        .channel(NioSocketChannel.class)
+                        .handler(new ChannelInitializer<SocketChannel>() {
+                            @Override
+                            protected void initChannel(SocketChannel socketChannel) throws Exception {
+                                channel = socketChannel;
+                            }
+                        });
+                ChannelFuture future = b.connect(HOST, PORT).sync();
+                future.channel().closeFuture().sync();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                workerGroup.shutdownGracefully();
+            }
+        }).start();
 //        }
     }
 
@@ -97,9 +77,10 @@ public class AuthController implements Initializable {
         Parent root = loader.getRoot();
         Stage stage = new Stage();
         stage.setScene(new Scene(root));
-        stage.setTitle("123123");
+        stage.setTitle("Explorer");
         controller = loader.getController();
-        channel.pipeline().addFirst(new ClientInputHandler(controller.explorerController, controller.explorerCloudController));
+        channel.pipeline().addLast(new ClientInputHandler(controller.explorerController, controller.explorerCloudController));
+//                .addLast(new FileInputHandler(controller.explorerController));
         stage.setOnCloseRequest(e -> {
             Platform.exit();
             System.exit(0);
@@ -111,11 +92,10 @@ public class AuthController implements Initializable {
     }
 
     public void successAuth(ActionEvent actionEvent) {
-
-        // Подключаюсь к удаленному серверу
+        // TODO
         // Проверяю в базе пользователя и пароль
         // Если всё ок, то устанавливаю netty соединение
-        // Если ок, то передаю управление на след экран
+        // И передаю управление на след экран
         Button btn = (Button) actionEvent.getSource();
         btn.getParent().getScene().getWindow().hide();
         successAuth("/view/main.fxml");

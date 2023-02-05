@@ -1,6 +1,5 @@
 package ru.onetwo33.controller;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
@@ -16,7 +15,6 @@ import ru.onetwo33.util.UtilsExplorer;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -112,7 +110,7 @@ public class ExplorerController extends AuthController implements Initializable 
             String fileMd5 = file.getName();//  file name
             uploadFile.setFile(file);
             uploadFile.setFile_md5(fileMd5);
-            uploadFile.setStarPos(0);//  File start location
+            uploadFile.setStartPos(0);//  File start location
             channel.pipeline().addLast(new ObjectEncoder());
             channel.pipeline().addLast(new ObjectDecoder(ClassResolvers.weakCachingConcurrentResolver(null)));
             channel.pipeline().addLast(new FileUploadClientHandler(uploadFile));
@@ -123,6 +121,18 @@ public class ExplorerController extends AuthController implements Initializable 
     }
 
     public void delete() {
+        Path path = Paths.get(pathField.getText())
+                .resolve(filesTable
+                        .getSelectionModel()
+                        .getSelectedItem()
+                        .getFilename());
+        try {
+            Files.delete(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        updateList(Paths.get(pathField.getText()));
     }
 
     public void updateList(Path path) {

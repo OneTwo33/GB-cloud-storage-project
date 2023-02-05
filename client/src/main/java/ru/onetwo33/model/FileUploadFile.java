@@ -8,7 +8,7 @@ public class FileUploadFile implements Serializable {
     private static final long serialVersionUID = 1L;
     private File file;//  file
     private String file_md5;//  file name
-    private int starPos;//  Starting position
+    private int startPos;//  Starting position
     private byte[] bytes;//  File byte array
     private int endPos;//  Ending position
 
@@ -28,12 +28,12 @@ public class FileUploadFile implements Serializable {
         this.file_md5 = file_md5;
     }
 
-    public int getStarPos() {
-        return starPos;
+    public int getStartPos() {
+        return startPos;
     }
 
-    public void setStarPos(int starPos) {
-        this.starPos = starPos;
+    public void setStartPos(int startPos) {
+        this.startPos = startPos;
     }
 
     public byte[] getBytes() {

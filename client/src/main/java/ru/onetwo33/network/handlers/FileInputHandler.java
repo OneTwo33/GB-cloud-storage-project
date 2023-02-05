@@ -11,7 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.*;
 
 public class FileInputHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
@@ -29,28 +29,22 @@ public class FileInputHandler extends SimpleChannelInboundHandler<ByteBuf> {
     @Override
     public void channelRead0(ChannelHandlerContext ctx, ByteBuf buf) throws Exception {
         file = Paths.get(explorerController.pathField.getText() + "\\" + name);
-        if (Files.exists(file)) {
-            try (OutputStream fout = new BufferedOutputStream(
-                    Files.newOutputStream(file, APPEND)
-            )) {
-                byte[] bytes = new byte[buf.readableBytes()];
-                buf.readBytes(bytes);
-                fout.write(bytes);
-            }
-        } else {
-            try (OutputStream fout = new BufferedOutputStream(
-                    Files.newOutputStream(file)
-            )) {
-                byte[] bytes = new byte[buf.readableBytes()];
-                buf.readBytes(bytes);
-                fout.write(bytes);
-            }
+        if (Files.notExists(file)) {
+            file = Files.createFile(file);
+        }
+
+        try (OutputStream fout = new BufferedOutputStream(
+                Files.newOutputStream(file, CREATE, APPEND, SYNC)
+        )) {
+            byte[] bytes = new byte[buf.readableBytes()];
+            buf.readBytes(bytes);
+            fout.write(bytes);
         }
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        if (Files.size(file) >= size) {
+        if (file != null && Files.size(file) == size) {
             explorerController.updateList(Paths.get(explorerController.pathField.getText()));
             ctx.channel().pipeline().remove(this);
         }

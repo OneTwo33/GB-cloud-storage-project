@@ -4,7 +4,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import ru.onetwo33.model.FileUploadFile;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
@@ -28,7 +27,7 @@ public class FileUploadClientHandler extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) {
         try {
             randomAccessFile = new RandomAccessFile(fileUploadFile.getFile(), "r");
-            randomAccessFile.seek(fileUploadFile.getStarPos());
+            randomAccessFile.seek(fileUploadFile.getStartPos());
             lastLength = (int) randomAccessFile.length() / 10;
             byte[] bytes = new byte[lastLength];
             if ((byteRead = randomAccessFile.read(bytes)) != -1) {
@@ -38,10 +37,8 @@ public class FileUploadClientHandler extends ChannelInboundHandlerAdapter {
             } else {
                 System.out.println(" The file has been read ");
             }
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
-        } catch (IOException i) {
-            i.printStackTrace();
         }
     }
 

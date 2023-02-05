@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import ru.onetwo33.controller.ExplorerController;
+import ru.onetwo33.util.UtilsExplorer;
 
 import java.io.BufferedOutputStream;
 import java.io.OutputStream;
@@ -45,7 +46,9 @@ public class FileInputHandler extends SimpleChannelInboundHandler<ByteBuf> {
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         if (file != null && Files.size(file) == size) {
-            explorerController.updateList(Paths.get(explorerController.pathField.getText()));
+            UtilsExplorer.updateList(explorerController.filesTable,
+                    explorerController.pathField,
+                    Paths.get(explorerController.pathField.getText()));
             ctx.channel().pipeline().remove(this);
         }
     }

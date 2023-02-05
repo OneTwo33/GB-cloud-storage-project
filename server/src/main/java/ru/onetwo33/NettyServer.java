@@ -7,14 +7,7 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.serialization.ClassResolvers;
-import io.netty.handler.codec.serialization.ObjectDecoder;
-import io.netty.handler.codec.serialization.ObjectEncoder;
-import io.netty.handler.codec.string.LineEncoder;
-import io.netty.handler.codec.string.StringDecoder;
 import ru.onetwo33.handlers.CmdHandler;
-import ru.onetwo33.handlers.FileUploadServerHandler;
-import ru.onetwo33.handlers.MessageHandler;
 import ru.onetwo33.codecs.CmdDecoder;
 
 public class NettyServer {
@@ -36,15 +29,6 @@ public class NettyServer {
                             ch.pipeline().addLast(
                                     new CmdDecoder(64 * 1024),
                                     new CmdHandler()
-//                                    new StringEncoder(),
-//                                    new StringDecoder(),
-//                                    new ObjectEncoder(),
-//                                    new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
-//                                    new MessageHandler()
-//                                    new ObjectEncoder(),
-//                                    new ObjectDecoder(Integer.MAX_VALUE, ClassResolvers.weakCachingConcurrentResolver(null)),
-//                                    new FileUploadServerHandler()
-//                                    new LineEncoder()
                             );
                         }
                     });

@@ -9,6 +9,7 @@ import javafx.application.Platform;
 import ru.onetwo33.controller.ExplorerCloudController;
 import ru.onetwo33.controller.ExplorerController;
 import ru.onetwo33.model.FileInfo;
+import ru.onetwo33.util.UtilsExplorer;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -60,6 +61,10 @@ public class ClientInputHandler extends SimpleChannelInboundHandler<ByteBuf> {
         fileInfos = objectMapper.convertValue(map.get("fileinfos"), new TypeReference<List<FileInfo>>(){});
         allDirs = "";
 
-        Platform.runLater( () -> explorerCloudController.updateList(path, fileInfos) );
+        Platform.runLater( () -> UtilsExplorer.updateList(
+                explorerCloudController.cloudFilesTable,
+                explorerCloudController.pathField,
+                path,
+                fileInfos) );
     }
 }

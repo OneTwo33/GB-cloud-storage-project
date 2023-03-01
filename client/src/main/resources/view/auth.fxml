@@ -11,5 +11,10 @@
     <TextField fx:id="loginField" promptText="Логин" focusTraversable="false" />
     <TextField fx:id="passwordField" promptText="Пароль" focusTraversable="false" />
 
-    <Button text="Войти" onAction="#successAuth" />
+    <Button text="Войти" onAction="#connect" />
+
+    <HBox fx:id="hboxStatus" spacing="10.0">
+        <ProgressBar fx:id="piStatus" prefWidth="150.0" progress="0.0"/>
+        <Label fx:id="lblStatus" text="Label"/>
+    </HBox>
 </VBox>

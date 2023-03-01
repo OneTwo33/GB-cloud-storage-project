@@ -4,6 +4,8 @@ import io.netty.buffer.ByteBuf;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import ru.onetwo33.model.FileInfo;
@@ -26,10 +28,10 @@ public class ExplorerCloudController extends AuthController implements Initializ
     public void initialize(URL location, ResourceBundle resources) {
         UtilsExplorer.buildExplorer(cloudFilesTable);
 
-        ByteBuf buffer = channel.alloc().directBuffer();
-        byte[] bytes = "ls .\r\n".getBytes(StandardCharsets.UTF_8);
-        buffer.writeBytes(bytes);
-        channel.writeAndFlush(buffer);
+//        ByteBuf buffer = channel.alloc().directBuffer();
+//        byte[] bytes = "ls .\r\n".getBytes(StandardCharsets.UTF_8);
+//        buffer.writeBytes(bytes);
+//        channel.writeAndFlush(buffer);
 
         cloudFilesTable.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
@@ -57,10 +59,35 @@ public class ExplorerCloudController extends AuthController implements Initializ
 
     public void download() {
         String command = "download";
-        UtilsExplorer.copy(channel, cloudFilesTable, pathField, command);
+        if (UtilsExplorer.getSelectedFilename(cloudFilesTable) == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Ни один файл не выбран", ButtonType.OK);
+            alert.showAndWait();
+            return;
+        }
+        Path path = Paths.get(pathField.getText())
+                .resolve(cloudFilesTable
+                        .getSelectionModel()
+                        .getSelectedItem()
+                        .getFilename());
+        String file = command + " " + path + "\r\n";
+        ByteBuf buffer = channel.alloc().directBuffer();
+        buffer.writeBytes(file.getBytes(StandardCharsets.UTF_8));
+        channel.writeAndFlush(buffer);
     }
 
     public void delete() {
+        String command = "delete";
+        if (UtilsExplorer.getSelectedFilename(cloudFilesTable) == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Ни один файл не выбран", ButtonType.OK);
+            alert.showAndWait();
+            return;
+        }
+        String pathString = pathField.getText() + cloudFilesTable.getSelectionModel().getSelectedItem().getFilename();
+        Path path = Paths.get(pathString);
+        String file = command + " " + path + "\r\n";
+        ByteBuf buffer = channel.alloc().directBuffer();
+        buffer.writeBytes(file.getBytes(StandardCharsets.UTF_8));
+        channel.writeAndFlush(buffer);
     }
 
     public void btnPathUpAction(ActionEvent actionEvent) {

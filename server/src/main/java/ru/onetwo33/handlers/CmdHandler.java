@@ -6,6 +6,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.DefaultFileRegion;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.ReferenceCountUtil;
+import ru.onetwo33.codecs.CmdDecoder;
 import ru.onetwo33.model.Cmd;
 import ru.onetwo33.model.FileInfo;
 
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CmdHandler extends SimpleChannelInboundHandler<Cmd> {
+
     @Override
     public void channelRead0(ChannelHandlerContext ctx, Cmd msg) throws Exception {
         String name = msg.name().toString(StandardCharsets.UTF_8);
@@ -44,7 +46,13 @@ public class CmdHandler extends SimpleChannelInboundHandler<Cmd> {
             }
         } else if ("upload".equals(name)) {
             if (!args.isEmpty()) {
-
+                String[] attrs = args.split(" ");
+                long size = Long.parseLong(attrs[1]);
+                ctx.channel().pipeline().addFirst(new FileInputHandler(attrs[0], size));
+                ctx.channel().pipeline().remove(CmdDecoder.class);
+//            ctx.channel().pipeline().addFirst(new FileInputHandler(explorerController));
+//                ctx.fireChannelRead(attrs);
+                return;
 //                Files.createFile();
             }
         } else if ("download".equals(name)) {
@@ -61,13 +69,16 @@ public class CmdHandler extends SimpleChannelInboundHandler<Cmd> {
             if (!args.isEmpty()) {
                 String pathString = args.replaceAll("\\\\", "/");
                 Path path = Paths.get(pathString);
+                System.out.println("Args: " + args);
+                System.out.println("pathString: " + pathString);
+                System.out.println("Path: " + path);
                 Files.delete(path);
             }
         }
         ReferenceCountUtil.release(msg);
     }
 
-    private void uploadFile(ChannelHandlerContext ctx, File file) throws IOException {
+    private void uploadFile(ChannelHandlerContext ctx, File file) {
         String filename = file.getName().replaceAll(" ", "_");
         long length = file.length();
 

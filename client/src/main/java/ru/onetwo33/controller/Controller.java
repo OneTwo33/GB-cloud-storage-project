@@ -6,6 +6,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
+import java.io.IOException;
+
 public class Controller {
 
     @FXML
@@ -20,9 +22,9 @@ public class Controller {
     }
 
     @FXML
-    public void copyBtnAction(ActionEvent actionEvent) {
+    public void copyBtnAction(ActionEvent actionEvent) throws IOException {
         if (explorerController.filesTable.isFocused()) {
-            explorerController.upload();
+            explorerController.upload(explorerCloudController.pathField.getText());
         } else if (explorerCloudController.cloudFilesTable.isFocused()) {
             explorerCloudController.download();
         } else {

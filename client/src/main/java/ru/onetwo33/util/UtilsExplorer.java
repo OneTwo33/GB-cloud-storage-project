@@ -81,26 +81,11 @@ public class UtilsExplorer {
         }
     }
 
-    public static void copy(SocketChannel channel, TableView<FileInfo> filesTable, TextField pathField, String command) {
-        if (getSelectedFilename(filesTable) == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Ни один файл не выбран", ButtonType.OK);
-            alert.showAndWait();
-            return;
-        }
-        if (getSelectedFilename(filesTable) != null) {
-            Path path = Paths.get(pathField.getText())
-                    .resolve(filesTable
-                            .getSelectionModel()
-                            .getSelectedItem()
-                            .getFilename());
-            String file = command + " " + path + "\r\n";
-            ByteBuf buffer = channel.alloc().directBuffer();
-            buffer.writeBytes(file.getBytes(StandardCharsets.UTF_8));
-            channel.writeAndFlush(buffer);
-        }
-    }
+//    public static void copy(SocketChannel channel, TableView<FileInfo> filesTable, TextField pathField, String command) {
+//
+//    }
 
-    private static String getSelectedFilename(TableView<FileInfo> filesTable) {
+    public static String getSelectedFilename(TableView<FileInfo> filesTable) {
         if (!filesTable.isFocused()) {
             return null;
         }

@@ -41,7 +41,7 @@ public class ClientInputHandler extends SimpleChannelInboundHandler<ByteBuf> {
             long size = Long.parseLong(attrs[2]);
             ctx.channel().pipeline().addFirst(new FileInputHandler(explorerController, attrs[1], size));
 //            ctx.channel().pipeline().addFirst(new FileInputHandler(explorerController));
-            ctx.fireChannelRead(attrs);
+//            ctx.fireChannelRead(attrs);
             return;
         }
 

@@ -1,14 +1,19 @@
 package ru.onetwo33.util;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.socket.SocketChannel;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.*;
 import ru.onetwo33.model.FileInfo;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class UtilsExplorer {
@@ -50,5 +55,40 @@ public class UtilsExplorer {
 
         tableView.getColumns().addAll(fileTypeColumn, filenameColumn, fileSizeColumn, fileDateColumn);
         tableView.getSortOrder().add(fileTypeColumn);
+    }
+
+    public static void updateList(TableView<FileInfo> filesTable, TextField pathField, Path path) {
+        try {
+            pathField.setText(path.normalize().toAbsolutePath().toString());
+            filesTable.getItems().clear();
+            filesTable.getItems().addAll(Files.list(path).map(FileInfo::new).collect(Collectors.toList()));
+            filesTable.sort();
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "По какой-то причине не удалось обновить список файлов");
+            alert.showAndWait();
+        }
+    }
+
+    public static void updateList(TableView<FileInfo> filesTable, TextField pathField, Path path, List<FileInfo> fileInfoList) {
+        try {
+            pathField.setText(path.normalize().toString());
+            filesTable.getItems().clear();
+            filesTable.getItems().addAll(fileInfoList);
+            filesTable.sort();
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "По какой-то причине не удалось обновить список файлов");
+            alert.showAndWait();
+        }
+    }
+
+//    public static void copy(SocketChannel channel, TableView<FileInfo> filesTable, TextField pathField, String command) {
+//
+//    }
+
+    public static String getSelectedFilename(TableView<FileInfo> filesTable) {
+        if (!filesTable.isFocused()) {
+            return null;
+        }
+        return filesTable.getSelectionModel().getSelectedItem().getFilename();
     }
 }

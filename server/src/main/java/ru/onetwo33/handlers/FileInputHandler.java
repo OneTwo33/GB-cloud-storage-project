@@ -1,10 +1,9 @@
-package ru.onetwo33.network.handlers;
+package ru.onetwo33.handlers;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import ru.onetwo33.controller.ExplorerController;
-import ru.onetwo33.util.UtilsExplorer;
+import ru.onetwo33.codecs.CmdDecoder;
 
 import java.io.BufferedOutputStream;
 import java.io.OutputStream;
@@ -16,20 +15,19 @@ import static java.nio.file.StandardOpenOption.*;
 
 public class FileInputHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
-    private final ExplorerController explorerController;
-    private final String name;
+//    private final String name;
     private final long size;
     private Path file;
 
-    public FileInputHandler(ExplorerController explorerController, String name, long size) {
-        this.explorerController = explorerController;
-        this.name = name;
+    public FileInputHandler(String name, long size) {
+        this.file = Paths.get(name);
         this.size = size;
     }
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, ByteBuf buf) throws Exception {
-        file = Paths.get(explorerController.pathField.getText() + "\\" + name);
+//        String filename = file.getName().replaceAll(" ", "_");
+//        file = Paths.get(name);
         if (Files.notExists(file)) {
             file = Files.createFile(file);
         }
@@ -45,11 +43,15 @@ public class FileInputHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        if (file != null && Files.size(file) == size) {
-            UtilsExplorer.updateList(explorerController.filesTable,
-                    explorerController.pathField,
-                    Paths.get(explorerController.pathField.getText()));
-            ctx.channel().pipeline().remove(this);
+        if (Files.exists(file)) {
+            System.out.println(size + " FROM TO: " + Files.size(file));
+            if (Files.size(file) == size) {
+//            UtilsExplorer.updateList(explorerController.filesTable,
+//                    explorerController.pathField,
+//                    Paths.get(explorerController.pathField.getText()));
+                ctx.channel().pipeline().addFirst(new CmdDecoder(64 * 1024));
+                ctx.channel().pipeline().remove(this);
+            }
         }
     }
 }

@@ -5,15 +5,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import ru.onetwo33.model.FileInfo;
 import ru.onetwo33.util.UtilsExplorer;
 
-import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -29,10 +28,10 @@ public class ExplorerCloudController extends AuthController implements Initializ
     public void initialize(URL location, ResourceBundle resources) {
         UtilsExplorer.buildExplorer(cloudFilesTable);
 
-        ByteBuf buffer = channel.alloc().directBuffer();
-        byte[] bytes = "ls .\r\n".getBytes(StandardCharsets.UTF_8);
-        buffer.writeBytes(bytes);
-        channel.writeAndFlush(buffer);
+//        ByteBuf buffer = channel.alloc().directBuffer();
+//        byte[] bytes = "ls .\r\n".getBytes(StandardCharsets.UTF_8);
+//        buffer.writeBytes(bytes);
+//        channel.writeAndFlush(buffer);
 
         cloudFilesTable.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
@@ -51,17 +50,6 @@ public class ExplorerCloudController extends AuthController implements Initializ
         });
     }
 
-//    public String getSelectedFilename() {
-//        if (!cloudFilesTable.isFocused()) {
-//            return null;
-//        }
-//        return cloudFilesTable.getSelectionModel().getSelectedItem().getFilename();
-//    }
-//
-//    public String getCurrentPath() {
-//        return pathField.getText();
-//    }
-
     @FXML
     public void getRoot(ActionEvent actionEvent) {
         ByteBuf buffer = channel.alloc().directBuffer();
@@ -70,30 +58,36 @@ public class ExplorerCloudController extends AuthController implements Initializ
     }
 
     public void download() {
+        String command = "download";
+        if (UtilsExplorer.getSelectedFilename(cloudFilesTable) == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Ни один файл не выбран", ButtonType.OK);
+            alert.showAndWait();
+            return;
+        }
         Path path = Paths.get(pathField.getText())
                 .resolve(cloudFilesTable
                         .getSelectionModel()
                         .getSelectedItem()
                         .getFilename());
-        String file = "download " + path + "\r\n";
+        String file = command + " " + path + "\r\n";
         ByteBuf buffer = channel.alloc().directBuffer();
         buffer.writeBytes(file.getBytes(StandardCharsets.UTF_8));
         channel.writeAndFlush(buffer);
     }
 
     public void delete() {
-    }
-
-    public void updateList(Path path, List<FileInfo> fileInfoList) {
-        try {
-            pathField.setText(path.normalize().toString());
-            cloudFilesTable.getItems().clear();
-            cloudFilesTable.getItems().addAll(fileInfoList);
-            cloudFilesTable.sort();
-        } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.WARNING, "По какой-то причине не удалось обновить список файлов");
+        String command = "delete";
+        if (UtilsExplorer.getSelectedFilename(cloudFilesTable) == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Ни один файл не выбран", ButtonType.OK);
             alert.showAndWait();
+            return;
         }
+        String pathString = pathField.getText() + cloudFilesTable.getSelectionModel().getSelectedItem().getFilename();
+        Path path = Paths.get(pathString);
+        String file = command + " " + path + "\r\n";
+        ByteBuf buffer = channel.alloc().directBuffer();
+        buffer.writeBytes(file.getBytes(StandardCharsets.UTF_8));
+        channel.writeAndFlush(buffer);
     }
 
     public void btnPathUpAction(ActionEvent actionEvent) {
@@ -103,6 +97,4 @@ public class ExplorerCloudController extends AuthController implements Initializ
         buffer.writeBytes(bytes);
         channel.writeAndFlush(buffer);
     }
-
-
 }
